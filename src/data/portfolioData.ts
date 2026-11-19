@@ -280,8 +280,8 @@ export const DEFAULT_PORTFOLIO_DATA: PortfolioData = {
     ],
   },
   contact: {
-    phone: '7598499066',
-    whatsappNumber: '7598499066',
+    phone: '9751331659',
+    whatsappNumber: '9751331659', 
     email: '[Your email]',
     socialLinks: [
       { id: 'social-linkedin', platform: 'LinkedIn', placeholder: '[YOUR LINKEDIN URL]', url: '' },
