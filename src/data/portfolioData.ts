@@ -27,6 +27,7 @@ export interface PaperSketchItem {
   category: string;
   caption: string;
   imageUrl: string;
+  secondaryImageUrl?: string;
 }
 
 export interface SeoPillarItem {
@@ -65,7 +66,7 @@ export const PORTFOLIO_IMAGES = {
       category: 'Research Reference',
       caption: 'Original research documentation informing page structure and content hierarchy.',
       imageUrl:
-        'https://zzmnbatzfflzqrfudsxr.supabase.co/storage/v1/object/public/portfolio-assets/reearch.jpeg',
+        'https://zzmnbatzfflzqrfudsxr.supabase.co/storage/v1/object/public/portfolio-assets/research/research.jpeg',
     },
     {
       id: 'gallery-frontend-map',
@@ -81,22 +82,27 @@ export const PORTFOLIO_IMAGES = {
       id: 'sketch-frontend-sitemap',
       title: 'Frontend Sitemap – Original Hand-Drawn Sketch',
       category: 'Original Hand-Drawn Frontend Sitemap',
-      caption: 'Original hand-drawn frontend sitemap sketch ready for Supabase image URL.',
-      imageUrl: '',
+      caption: 'Original hand-drawn frontend sitemap sketch mapping top-level navigation and page structure.',
+      imageUrl:
+        'https://zzmnbatzfflzqrfudsxr.supabase.co/storage/v1/object/public/portfolio-assets/paper%20sketch/frontendsitemap.jpeg',
     },
     {
       id: 'sketch-backend-sitemap',
       title: 'Backend Sitemap – Original Hand-Drawn Sketch',
       category: 'Original Hand-Drawn Backend Sitemap',
-      caption: 'Original hand-drawn backend sitemap sketch ready for Supabase image URL.',
-      imageUrl: '',
+      caption: 'Original hand-drawn backend sitemap sketch outlining administrative and booking workflows.',
+      imageUrl:
+        'https://zzmnbatzfflzqrfudsxr.supabase.co/storage/v1/object/public/portfolio-assets/paper%20sketch/backendsitemap.jpeg',
     },
     {
       id: 'sketch-wireframe',
       title: 'Wireframe – Original Hand-Drawn Sketch',
       category: 'Original Hand-Drawn Wireframe',
-      caption: 'Original hand-drawn wireframe sketch ready for Supabase image URL.',
-      imageUrl: '',
+      caption: 'Two original hand-drawn wireframe pages displayed together prior to digital implementation.',
+      imageUrl:
+        'https://zzmnbatzfflzqrfudsxr.supabase.co/storage/v1/object/public/portfolio-assets/paper%20sketch/wireframe-1.jpeg',
+      secondaryImageUrl:
+        'https://zzmnbatzfflzqrfudsxr.supabase.co/storage/v1/object/public/portfolio-assets/paper%20sketch/wireframe-2.jpeg',
     },
   ] as PaperSketchItem[],
 };
@@ -274,12 +280,12 @@ export const DEFAULT_PORTFOLIO_DATA: PortfolioData = {
     ],
   },
   contact: {
-    phone: '9751331659',
-    whatsappNumber: '919751331659',
-    email: '[YOUR EMAIL ADDRESS]',
+    phone: '7598499066',
+    whatsappNumber: '7598499066',
+    email: '[Your email]',
     socialLinks: [
       { id: 'social-linkedin', platform: 'LinkedIn', placeholder: '[YOUR LINKEDIN URL]', url: '' },
-      { id: 'social-instagram', platform: 'Instagram', placeholder: '[YOUR INSTAGRAM URL]', url: '' },
+      { id: 'social-instagram', platform: 'Instagram', placeholder: 'bb_travels', url: '' },
     ],
   },
 };

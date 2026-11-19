@@ -515,6 +515,25 @@ export function PortfolioCustomizerModal({
                       />
                       <input
                         type="text"
+                        placeholder="Optional second Supabase public image URL (side-by-side)"
+                        value={sketch.secondaryImageUrl || ''}
+                        onChange={(e) =>
+                          setDraft({
+                            ...draft,
+                            paperSketchImages: draft.paperSketchImages.map((entry) =>
+                              entry.id === sketch.id
+                                ? {
+                                    ...entry,
+                                    secondaryImageUrl: e.target.value || undefined,
+                                  }
+                                : entry
+                            ),
+                          })
+                        }
+                        className="w-full rounded-lg border border-[#EAE3D5] bg-white px-3 py-1.5 text-xs text-[#252525] focus:border-[#C5A253] focus:outline-none"
+                      />
+                      <input
+                        type="text"
                         placeholder="Short caption"
                         value={sketch.caption}
                         onChange={(e) =>

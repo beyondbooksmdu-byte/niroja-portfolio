@@ -69,10 +69,19 @@ function loadPortfolioData(): PortfolioData {
       marketResearch: {
         ...DEFAULT_PORTFOLIO_DATA.marketResearch,
         ...(parsed.marketResearch || {}),
+        imageUrl:
+          !parsed.marketResearch?.imageUrl ||
+          parsed.marketResearch.imageUrl.includes('reearch.jpeg')
+            ? DEFAULT_PORTFOLIO_DATA.marketResearch.imageUrl
+            : parsed.marketResearch.imageUrl,
       },
       usp: {
         ...DEFAULT_PORTFOLIO_DATA.usp,
         ...(parsed.usp || {}),
+        imageUrl:
+          !parsed.usp?.imageUrl || parsed.usp.imageUrl.includes('reearch.jpeg')
+            ? DEFAULT_PORTFOLIO_DATA.usp.imageUrl
+            : parsed.usp.imageUrl,
       },
       sitemaps: {
         ...DEFAULT_PORTFOLIO_DATA.sitemaps,
@@ -80,12 +89,37 @@ function loadPortfolioData(): PortfolioData {
       },
       designProcess: {
         items: migratedDesignItems,
-        additionalGalleryImages:
+        additionalGalleryImages: (
           parsed.designProcess?.additionalGalleryImages ||
-          DEFAULT_PORTFOLIO_DATA.designProcess.additionalGalleryImages,
+          DEFAULT_PORTFOLIO_DATA.designProcess.additionalGalleryImages
+        ).map((img) =>
+          img.imageUrl?.includes('reearch.jpeg')
+            ? { ...img, imageUrl: DEFAULT_PORTFOLIO_DATA.marketResearch.imageUrl }
+            : img
+        ),
       },
       paperSketchImages: Array.isArray(parsed.paperSketchImages)
-        ? parsed.paperSketchImages
+        ? parsed.paperSketchImages.map((item) => {
+            const defaultMatch = DEFAULT_PORTFOLIO_DATA.paperSketchImages.find(
+              (d) => d.id === item.id
+            );
+            if (!defaultMatch) return item;
+            return {
+              ...defaultMatch,
+              ...item,
+              imageUrl:
+                !item.imageUrl ||
+                (item.id === 'sketch-frontend-sitemap' &&
+                  item.imageUrl.includes('WhatsApp%20Image%202026-11-19'))
+                  ? defaultMatch.imageUrl
+                  : item.imageUrl,
+              secondaryImageUrl: item.secondaryImageUrl || defaultMatch.secondaryImageUrl,
+              caption:
+                !item.caption || item.caption.includes('ready for Supabase image URL')
+                  ? defaultMatch.caption
+                  : item.caption,
+            };
+          })
         : DEFAULT_PORTFOLIO_DATA.paperSketchImages,
       seo: {
         ...DEFAULT_PORTFOLIO_DATA.seo,
@@ -94,6 +128,18 @@ function loadPortfolioData(): PortfolioData {
       contact: {
         ...DEFAULT_PORTFOLIO_DATA.contact,
         ...(parsed.contact || {}),
+        phone:
+          !parsed.contact?.phone || parsed.contact.phone === '9751331659'
+            ? DEFAULT_PORTFOLIO_DATA.contact.phone
+            : parsed.contact.phone,
+        whatsappNumber:
+          !parsed.contact?.whatsappNumber || parsed.contact.whatsappNumber === '9751331659'
+            ? DEFAULT_PORTFOLIO_DATA.contact.whatsappNumber
+            : parsed.contact.whatsappNumber,
+        email:
+          !parsed.contact?.email || parsed.contact.email === '[YOUR EMAIL ADDRESS]'
+            ? DEFAULT_PORTFOLIO_DATA.contact.email
+            : parsed.contact.email,
       },
     };
   } catch {
@@ -896,17 +942,62 @@ export default function App() {
               {data.paperSketchImages.map((sketch) => (
                 <article
                   key={sketch.id}
-                  className="rounded-2xl border border-[#EAE3D5] bg-white p-5 shadow-[0_8px_30px_rgb(37,37,37,0.04)] sm:p-6"
+                  className={`rounded-2xl border border-[#EAE3D5] bg-white p-5 shadow-[0_8px_30px_rgb(37,37,37,0.04)] sm:p-6 ${
+                    sketch.secondaryImageUrl ? 'md:col-span-2' : ''
+                  }`}
                 >
-                  <PortfolioImage
-                    src={sketch.imageUrl}
-                    alt={sketch.title}
-                    preserveAspect
-                    onPreview={sketch.imageUrl ? openPreview : undefined}
-                    previewTitle={sketch.title}
-                    previewCaption={sketch.caption}
-                    roundedClass="rounded-xl"
-                  />
+                  {sketch.secondaryImageUrl ? (
+                    <div className="grid grid-cols-1 gap-3 rounded-xl border border-[#EAE3D5] bg-[#FAFAF7] p-2 sm:p-3 md:grid-cols-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openPreview(
+                            sketch.imageUrl,
+                            `${sketch.title} (Left)`,
+                            sketch.caption
+                          )
+                        }
+                        className="group relative flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-white p-1 focus-visible:outline-2 focus-visible:outline-[#C5A253]"
+                        aria-label={`Preview ${sketch.title} left image`}
+                      >
+                        <img
+                          src={sketch.imageUrl}
+                          alt={`${sketch.title} — Part 1`}
+                          loading="lazy"
+                          className="h-auto max-h-[820px] w-full rounded-md object-contain transition-transform duration-300 group-hover:scale-[1.01]"
+                        />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          openPreview(
+                            sketch.secondaryImageUrl!,
+                            `${sketch.title} (Right)`,
+                            sketch.caption
+                          )
+                        }
+                        className="group relative flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-white p-1 focus-visible:outline-2 focus-visible:outline-[#C5A253]"
+                        aria-label={`Preview ${sketch.title} right image`}
+                      >
+                        <img
+                          src={sketch.secondaryImageUrl}
+                          alt={`${sketch.title} — Part 2`}
+                          loading="lazy"
+                          className="h-auto max-h-[820px] w-full rounded-md object-contain transition-transform duration-300 group-hover:scale-[1.01]"
+                        />
+                      </button>
+                    </div>
+                  ) : (
+                    <PortfolioImage
+                      src={sketch.imageUrl}
+                      alt={sketch.title}
+                      preserveAspect
+                      onPreview={sketch.imageUrl ? openPreview : undefined}
+                      previewTitle={sketch.title}
+                      previewCaption={sketch.caption}
+                      roundedClass="rounded-xl"
+                    />
+                  )}
                   <div className="mt-5">
                     {sketch.category && (
                       <p className="text-xs font-semibold tracking-wider text-[#8F6B20] uppercase">
@@ -928,7 +1019,104 @@ export default function App() {
           </div>
         </section>
 
-        {/* 9. SEO PROFILE – COMING SOON */}
+        {/* 9. RESPONSIVE WEBSITE PREVIEW – Unified Laptop + Smartphone Mockup */}
+        <section
+          id="responsive-preview"
+          className="border-t border-[#EAE3D5] bg-[#FAFAF7] py-16 lg:py-24"
+        >
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
+            <div className="mb-12 max-w-2xl">
+              <h2 className="text-sm font-semibold tracking-widest text-[#8F6B20] uppercase">
+                Responsive Website Preview
+              </h2>
+              <p className="font-display mt-3 text-balance text-3xl font-semibold tracking-tight text-[#252525] sm:text-4xl">
+                BB Travels Across Desktop &amp; Mobile
+              </p>
+            </div>
+
+            <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-8 md:flex-row md:items-end md:gap-0">
+              {/* Main Large Laptop / Computer Mockup */}
+              <div className="relative w-full max-w-[780px] md:flex-1">
+                {/* Laptop Display Lid */}
+                <div className="relative rounded-t-[1.35rem] border border-white/10 bg-[#1F1F1F] p-2.5 pt-4 shadow-[0_30px_70px_-20px_rgba(37,37,37,0.28)] ring-1 ring-black/15 sm:p-4 sm:pt-5">
+                  {/* Webcam Dot */}
+                  <div className="mb-2 flex items-center justify-center sm:mb-2.5">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#3E3E3E] ring-1 ring-white/10" />
+                  </div>
+                  {/* Laptop Screen */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      openPreview(
+                        data.bbTravels.screenshotUrl,
+                        'BB Travels — Desktop Website Preview',
+                        'Responsive website layout preview on laptop.'
+                      )
+                    }
+                    className="group relative block w-full cursor-pointer overflow-hidden rounded-[0.4rem] bg-white ring-1 ring-black/10 focus-visible:outline-2 focus-visible:outline-[#C5A253]"
+                    aria-label="Preview BB Travels website in laptop view"
+                  >
+                    <img
+                      src={data.bbTravels.screenshotUrl}
+                      alt="BB Travels website preview on laptop screen"
+                      loading="lazy"
+                      className="block h-auto max-h-[540px] w-full bg-white object-contain transition-transform duration-300 group-hover:scale-[1.01]"
+                    />
+                  </button>
+                </div>
+
+                {/* Metallic Laptop Base / Deck */}
+                <div className="relative mx-auto h-3.5 w-[106%] -translate-x-[3%] rounded-b-[1rem] border-t border-[#D6CFC2] bg-gradient-to-b from-[#F1ECE2] via-[#E2DBD0] to-[#C9C0B1] shadow-[0_14px_30px_-8px_rgba(37,37,37,0.28)] sm:h-4">
+                  <div className="mx-auto h-1.5 w-24 rounded-b-full bg-[#B7AE9F]/85" />
+                </div>
+              </div>
+
+              {/* Smartphone Mockup Placed Naturally Beside Laptop */}
+              <div className="relative z-10 w-[185px] shrink-0 sm:w-[205px] md:-ml-10 md:mb-1 lg:-ml-14">
+                {/* Side Hardware Buttons */}
+                <span className="absolute top-16 -left-[2px] h-7 w-[2px] rounded-l bg-[#333333]" />
+                <span className="absolute top-26 -left-[2px] h-10 w-[2px] rounded-l bg-[#333333]" />
+                <span className="absolute top-20 -right-[2px] h-12 w-[2px] rounded-r bg-[#333333]" />
+
+                {/* Smartphone Frame */}
+                <div className="rounded-[2.25rem] border border-white/10 bg-[#1F1F1F] p-[7px] shadow-[0_24px_55px_-12px_rgba(37,37,37,0.35)] ring-1 ring-[#C5A253]/35">
+                  {/* Dynamic Island / Speaker Pill */}
+                  <div className="mx-auto mb-1.5 flex h-3.5 w-16 items-center justify-end rounded-full bg-[#0F0F0F] px-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#2C3545]" />
+                  </div>
+
+                  {/* Smartphone Screen */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      openPreview(
+                        data.bbTravels.screenshotUrl,
+                        'BB Travels — Mobile Website Preview',
+                        'Responsive website layout preview on mobile.'
+                      )
+                    }
+                    className="group relative block w-full cursor-pointer overflow-hidden rounded-[1.7rem] bg-white ring-1 ring-black/10 focus-visible:outline-2 focus-visible:outline-[#C5A253]"
+                    aria-label="Preview BB Travels website in mobile view"
+                  >
+                    <img
+                      src={data.bbTravels.screenshotUrl}
+                      alt="BB Travels website preview on smartphone screen"
+                      loading="lazy"
+                      className="block h-auto max-h-[380px] w-full bg-white object-contain transition-transform duration-300 group-hover:scale-[1.01]"
+                    />
+                  </button>
+
+                  {/* Bottom Home Indicator */}
+                  <div className="mt-1.5 flex justify-center">
+                    <span className="h-1 w-14 rounded-full bg-white/25" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 10. SEO PROFILE – COMING SOON */}
         <section id="seo" className="border-t border-[#EAE3D5] bg-[#F5F1E8] py-16 lg:py-24">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-10">
             <div className="mb-12 flex flex-wrap items-end justify-between gap-4">
