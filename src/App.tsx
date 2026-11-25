@@ -20,6 +20,20 @@ import { PortfolioCustomizerModal } from './components/PortfolioCustomizerModal'
 
 const STORAGE_KEY = 'niroja_dm_portfolio_v3';
 
+function normalizeExternalUrl(rawUrl: string): string | null {
+  const trimmed = rawUrl.trim();
+  if (!trimmed) return null;
+  if (/^(javascript|data|vbscript):/i.test(trimmed)) return null;
+  const withProtocol = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+  try {
+    const parsed = new URL(withProtocol);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
 function loadPortfolioData(): PortfolioData {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -65,6 +79,8 @@ function loadPortfolioData(): PortfolioData {
       bbTravels: {
         ...DEFAULT_PORTFOLIO_DATA.bbTravels,
         ...(parsed.bbTravels || {}),
+        liveUrl:
+          parsed.bbTravels?.liveUrl?.trim() || DEFAULT_PORTFOLIO_DATA.bbTravels.liveUrl,
       },
       marketResearch: {
         ...DEFAULT_PORTFOLIO_DATA.marketResearch,
@@ -411,26 +427,24 @@ export default function App() {
                 </p>
               </div>
 
-              {data.bbTravels.liveUrl ? (
-                <a
-                  href={data.bbTravels.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#252525] px-5 py-2.5 text-sm font-medium text-[#FAFAF7] transition-colors hover:bg-[#8F6B20]"
-                >
-                  <span>View Live Project</span>
-                  <ExternalLink className="h-4 w-4 text-[#C5A253]" />
-                </a>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setIsCustomizerOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#252525] px-5 py-2.5 text-sm font-medium text-[#FAFAF7] transition-colors hover:bg-[#8F6B20]"
-                >
-                  <span>View Live Project</span>
-                  <ExternalLink className="h-4 w-4 text-[#C5A253]" />
-                </button>
-              )}
+              {(() => {
+                const liveProjectUrl = normalizeExternalUrl(data.bbTravels.liveUrl);
+                return liveProjectUrl ? (
+                  <a
+                    href={liveProjectUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#252525] px-5 py-2.5 text-sm font-medium text-[#FAFAF7] transition-colors hover:bg-[#8F6B20]"
+                  >
+                    <span>View Live Project</span>
+                    <ExternalLink className="h-4 w-4 text-[#C5A253]" />
+                  </a>
+                ) : (
+                  <span className="inline-flex items-center gap-2 rounded-lg border border-[#EAE3D5] bg-white px-5 py-2.5 text-sm font-medium text-[#777777]">
+                    <span>Live project coming soon</span>
+                  </span>
+                );
+              })()}
             </div>
 
             <div className="grid items-start gap-8 lg:grid-cols-12">

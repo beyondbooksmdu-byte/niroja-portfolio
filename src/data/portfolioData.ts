@@ -198,7 +198,7 @@ export const DEFAULT_PORTFOLIO_DATA: PortfolioData = {
       'Supabase Storage',
       'Responsive Web Architecture',
     ],
-    liveUrl: '',
+    liveUrl: 'https://bbtravels-madurai.vercel.app',
   },
   marketResearch: {
     title: 'Market Research & Competitor Analysis',
